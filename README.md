@@ -1,8 +1,8 @@
-# React & Node Tutorial - Full ECommerce in 5 Hours [2020]
+# T-Mobile ECommerce Demo
 
-Welcome to my React and Node tutorial to build a fully-functional e-commerce website in 5 hours. Open your code editor and follow me for the next hours to build an e-commerce website using React and Node.JS.
+A demo storefront for T-Mobile devices and accessories, built with React, Redux, Node/Express and MongoDB. It is based on the open-source "amazona" tutorial project (credits and the original tutorial notes are kept below).
 
-## Demo Website
+## Original Tutorial Demo
 
 👉 Demo : https://oldamazona.webacademy.pro
 
@@ -55,14 +55,19 @@ $ npm start
 ### 5. Create Admin User
 
 - Run this on chrome: http://localhost:5000/api/users/createadmin
-- It returns admin email and password
+- It returns admin email and password (admin@example.com / 1234)
 
-### 6. Login
+### 6. Seed The Catalog
+
+- Run http://localhost:5000/api/products/seed
+- It replaces the products collection with the T-Mobile phones, tablets, watches and accessories in `backend/data.js`
+
+### 7. Login
 
 - Run http://localhost:3000/signin
 - Enter admin email and password and click signin
 
-### 7. Create Products
+### 8. Manage Products
 
 - Run http://localhost:3000/products
 - Click create product and enter product info

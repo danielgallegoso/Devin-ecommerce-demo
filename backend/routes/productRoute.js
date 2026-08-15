@@ -1,5 +1,6 @@
 import express from 'express';
 import Product from '../models/productModel';
+import data from '../data';
 import { isAuth, isAdmin } from '../util';
 
 const router = express.Router();
@@ -23,6 +24,13 @@ router.get('/', async (req, res) => {
     sortOrder
   );
   res.send(products);
+});
+
+router.get('/seed', async (req, res) => {
+  await Product.deleteMany({});
+  const products = data.products.map(({ _id, ...product }) => product);
+  const createdProducts = await Product.insertMany(products);
+  res.send({ createdProducts });
 });
 
 router.get('/:id', async (req, res) => {
