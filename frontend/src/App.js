@@ -31,10 +31,16 @@ function App() {
         <header className="header">
           <div className="brand">
             <button onClick={openMenu}>&#9776;</button>
-            <Link to="/">amazona</Link>
+            <Link to="/" className="brand-logo">
+              <span className="brand-dots">
+                <i />
+                <i />
+              </span>
+              T-Mobile
+            </Link>
           </div>
           <div className="header-links">
-            <a href="cart.html">Cart</a>
+            <Link to="/cart">Cart</Link>
             {userInfo ? (
               <Link to="/profile">{userInfo.name}</Link>
             ) : (
@@ -54,20 +60,29 @@ function App() {
           </div>
         </header>
         <aside className="sidebar">
-          <h3>Shopping Categories</h3>
+          <h3>Shop</h3>
           <button className="sidebar-close-button" onClick={closeMenu}>
             x
           </button>
           <ul className="categories">
             <li>
-              <Link to="/category/Pants">Pants</Link>
+              <Link to="/category/Phones">Phones</Link>
             </li>
-
             <li>
-              <Link to="/category/Shirts">Shirts</Link>
+              <Link to="/category/Tablets">Tablets &amp; Hotspots</Link>
+            </li>
+            <li>
+              <Link to="/category/Watches">Watches</Link>
+            </li>
+            <li>
+              <Link to="/category/Accessories">Accessories</Link>
             </li>
           </ul>
         </aside>
+        <div className="promo-banner">
+          Get the latest 5G phones On Us with eligible trade-in. Plus, taxes and
+          fees included on every plan.
+        </div>
         <main className="main">
           <div className="content">
             <Route path="/orders" component={OrdersScreen} />
@@ -85,7 +100,9 @@ function App() {
             <Route path="/" exact={true} component={HomeScreen} />
           </div>
         </main>
-        <footer className="footer">All right reserved.</footer>
+        <footer className="footer">
+          T-Mobile Demo Store &middot; Coverage not available everywhere.
+        </footer>
       </div>
     </BrowserRouter>
   );

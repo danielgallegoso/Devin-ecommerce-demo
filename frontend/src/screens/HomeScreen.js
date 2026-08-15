@@ -25,8 +25,9 @@ function HomeScreen(props) {
     dispatch(listProducts(category, searchKeyword, sortOrder));
   };
   const sortHandler = (e) => {
-    setSortOrder(e.target.value);
-    dispatch(listProducts(category, searchKeyword, sortOrder));
+    const order = e.target.value;
+    setSortOrder(order);
+    dispatch(listProducts(category, searchKeyword, order));
   };
 
   return (

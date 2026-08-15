@@ -1,7 +1,7 @@
 {
-  "name": "amazona",
+  "name": "tmobile-ecommerce-demo",
   "version": "1.0.0",
-  "description": "Demo : https://amazonaapp.herokuapp.com/",
+  "description": "T-Mobile ecommerce demo store",
   "main": "index.js",
   "dependencies": {
     "aws-sdk": "^2.702.0",
