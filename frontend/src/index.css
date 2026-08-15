@@ -132,8 +132,11 @@ a:hover {
   color: var(--tmo-magenta);
 }
 .product-image {
-  max-width: 34rem;
-  max-height: 34rem;
+  width: 100%;
+  height: 26rem;
+  object-fit: contain;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
 }
 .product-rating {
   margin-bottom: 1rem;
