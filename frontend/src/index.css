@@ -122,6 +122,12 @@ a:hover {
   font-size: 2rem;
   font-weight: bold;
 }
+.product-name a {
+  color: #1f1f1f;
+}
+.product-name a:hover {
+  color: var(--tmo-magenta);
+}
 .product-brand {
   font-size: 1.2rem;
   color: #808080;
