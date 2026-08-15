@@ -27,6 +27,9 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/seed', async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).send({ message: 'Not Found' });
+  }
   await Product.deleteMany({});
   const products = data.products.map(({ _id, ...product }) => product);
   const createdProducts = await Product.insertMany(products);
