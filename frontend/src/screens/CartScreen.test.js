@@ -152,6 +152,46 @@ describe('CartScreen', () => {
     );
   });
 
+  test('clears the plan when the device-only option is selected again', async () => {
+    // Arrange
+    Axios.get.mockResolvedValue({ data: { _id: 'product-1', ...cartItem } });
+    const withPlan = { ...cartItem, plan: go5gPlus };
+    const { getByLabelText, queryByText, store } = renderWithStore(<CartScreen {...routeProps()} />, {
+      preloadedState: { cart: { cartItems: [withPlan], shipping: {}, payment: {} } },
+    });
+
+    // Act
+    fireEvent.change(getByLabelText('Wireless plan for Phone A'), { target: { value: '' } });
+
+    // Assert
+    await wait(() => expect(store.getState().cart.cartItems[0].plan).toBeNull());
+    expect(queryByText(/Wireless plans:/)).toBeNull();
+  });
+
+  test('defaults the quantity to 1 when the route carries no qty query', async () => {
+    Axios.get.mockResolvedValue({
+      data: {
+        _id: 'product-9',
+        name: 'Phone Z',
+        image: '/z.jpg',
+        price: 50,
+        countInStock: 2,
+        category: 'Phones',
+      },
+    });
+    const props = routeProps({
+      match: { params: { id: 'product-9' } },
+      location: { search: '?plan=go5g-plus' },
+    });
+
+    const { store } = renderWithStore(<CartScreen {...props} />, {
+      preloadedState: { cart: { cartItems: [], shipping: {}, payment: {} } },
+    });
+
+    await wait(() => expect(store.getState().cart.cartItems).toHaveLength(1));
+    expect(store.getState().cart.cartItems[0]).toMatchObject({ qty: 1, plan: go5gPlus });
+  });
+
   test('keeps the selected plan when only the quantity changes', async () => {
     Axios.get.mockResolvedValue({ data: { _id: 'product-1', ...cartItem } });
     const withPlan = { ...cartItem, plan: go5gPlus };
