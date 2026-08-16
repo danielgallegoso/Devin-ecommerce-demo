@@ -4,6 +4,9 @@ import { isAuth, isAdmin } from '../util';
 
 const router = express.Router();
 
+const canAccessOrder = (order, user) =>
+  user.isAdmin || String(order.user) === String(user._id);
+
 router.get("/", isAuth, isAdmin, async (req, res) => {
   const orders = await Order.find({}).populate('user');
   res.send(orders);
@@ -15,7 +18,7 @@ router.get("/mine", isAuth, async (req, res) => {
 
 router.get("/:id", isAuth, async (req, res) => {
   const order = await Order.findOne({ _id: req.params.id });
-  if (order) {
+  if (order && canAccessOrder(order, req.user)) {
     res.send(order);
   } else {
     res.status(404).send("Order Not Found.")
@@ -49,7 +52,7 @@ router.post("/", isAuth, async (req, res) => {
 
 router.put("/:id/pay", isAuth, async (req, res) => {
   const order = await Order.findById(req.params.id);
-  if (order) {
+  if (order && canAccessOrder(order, req.user)) {
     order.isPaid = true;
     order.paidAt = Date.now();
     order.payment = {
