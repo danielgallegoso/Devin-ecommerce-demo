@@ -81,6 +81,30 @@ describe('getPricePerLine', () => {
     );
   });
 
+  test('throws for a fractional line count', () => {
+    expect(() => getPricePerLine(plan(), 2.5)).toThrow(
+      'lineCount must be an integer'
+    );
+  });
+
+  test('throws for a non-numeric line count', () => {
+    expect(() => getPricePerLine(plan(), '3')).toThrow(
+      'lineCount must be an integer'
+    );
+  });
+
+  test('throws for a missing line count', () => {
+    expect(() => getPricePerLine(plan())).toThrow(
+      'lineCount must be an integer'
+    );
+  });
+
+  test('throws for NaN lines', () => {
+    expect(() => getPricePerLine(plan(), NaN)).toThrow(
+      'lineCount must be an integer'
+    );
+  });
+
   test('prices taxes-included plans from their own tier table', () => {
     const experienceMore = plan({
       id: 'experience-more',
@@ -121,6 +145,12 @@ describe('calculateMonthlyTotal', () => {
   test('throws for zero lines', () => {
     expect(() => calculateMonthlyTotal(plan(), 0)).toThrow(
       'lineCount must be at least 1'
+    );
+  });
+
+  test('throws instead of returning NaN for a fractional line count', () => {
+    expect(() => calculateMonthlyTotal(plan(), 1.5)).toThrow(
+      'lineCount must be an integer'
     );
   });
 });

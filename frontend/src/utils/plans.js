@@ -43,6 +43,9 @@ const PLANS = [
 ];
 
 const getPricePerLine = (plan, lineCount) => {
+  if (!Number.isInteger(lineCount)) {
+    throw new Error('lineCount must be an integer');
+  }
   if (lineCount < 1) {
     throw new Error('lineCount must be at least 1');
   }
