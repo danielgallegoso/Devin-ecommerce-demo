@@ -98,6 +98,42 @@ describe('PlansScreen', () => {
     });
   });
 
+  test('renders the hero heading and the pricing disclaimer', () => {
+    const { container } = render(<PlansScreen />);
+
+    expect(container.querySelector('.plans-hero h1').textContent).toBe(
+      'Pick the plan that fits your family'
+    );
+    expect(container.querySelector('.plans-disclaimer').textContent).toBe(
+      'Demo pricing shown with AutoPay. Coverage not available everywhere.'
+    );
+  });
+
+  test('keeps the selection when the selected line count is clicked again', () => {
+    // Arrange
+    const { container } = render(<PlansScreen />);
+    fireEvent.click(lineButton(container, 2));
+
+    // Act
+    fireEvent.click(lineButton(container, 2));
+
+    // Assert
+    expect(lineButton(container, 2).className).toContain('selected');
+    expect(
+      container.querySelectorAll('.plans-line-button.selected')
+    ).toHaveLength(1);
+  });
+
+  test('labels the per-line price unit on every plan card', () => {
+    const { container } = render(<PlansScreen />);
+
+    const units = Array.from(
+      container.querySelectorAll('.plan-price-unit')
+    ).map((unit) => unit.textContent);
+
+    expect(units).toEqual(PLANS.map(() => '/line per month'));
+  });
+
   test('lists every feature of each plan', () => {
     const { container } = render(<PlansScreen />);
 
