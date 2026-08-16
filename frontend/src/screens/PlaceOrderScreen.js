@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { createOrder } from '../actions/orderActions';
+import { calculateMonthlyPlanTotal } from '../utils/cartPricing';
 function PlaceOrderScreen(props) {
 
   const cart = useSelector(state => state.cart);
@@ -19,6 +20,7 @@ function PlaceOrderScreen(props) {
   const shippingPrice = itemsPrice > 100 ? 0 : 10;
   const taxPrice = 0.15 * itemsPrice;
   const totalPrice = itemsPrice + shippingPrice + taxPrice;
+  const monthlyPlanPrice = calculateMonthlyPlanTotal(cartItems);
 
   const dispatch = useDispatch();
 
@@ -72,7 +74,7 @@ function PlaceOrderScreen(props) {
           </div>
                 :
                 cartItems.map(item =>
-                  <li>
+                  <li key={item.product}>
                     <div className="cart-image">
                       <img src={item.image} alt="product" />
                     </div>
@@ -86,6 +88,11 @@ function PlaceOrderScreen(props) {
                       <div>
                         Qty: {item.qty}
                       </div>
+                      {item.plan &&
+                        <div>
+                          Plan: {item.plan.name} (${item.plan.monthlyPrice}/mo)
+                        </div>
+                      }
                     </div>
                     <div className="cart-price">
                       ${item.price}
@@ -118,6 +125,12 @@ function PlaceOrderScreen(props) {
             <div>Tax</div>
             <div>${taxPrice}</div>
           </li>
+          {monthlyPlanPrice > 0 &&
+            <li>
+              <div>Wireless plans</div>
+              <div>${monthlyPlanPrice}/mo</div>
+            </li>
+          }
           <li>
             <div>Order Total</div>
             <div>${totalPrice}</div>

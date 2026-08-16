@@ -4,9 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { detailsProduct, saveProductReview } from '../actions/productActions';
 import Rating from '../components/Rating';
 import { PRODUCT_REVIEW_SAVE_RESET } from '../constants/productConstants';
+import { WIRELESS_PLANS, isPlanEligible } from '../constants/wirelessPlans';
 
 function ProductScreen(props) {
   const [qty, setQty] = useState(1);
+  const [planId, setPlanId] = useState('');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const userSignin = useSelector((state) => state.userSignin);
@@ -41,7 +43,10 @@ function ProductScreen(props) {
     );
   };
   const handleAddToCart = () => {
-    props.history.push('/cart/' + props.match.params.id + '?qty=' + qty);
+    const planQuery = planId ? '&plan=' + planId : '';
+    props.history.push(
+      '/cart/' + props.match.params.id + '?qty=' + qty + planQuery
+    );
   };
 
   return (
@@ -103,6 +108,24 @@ function ProductScreen(props) {
                     ))}
                   </select>
                 </li>
+                {isPlanEligible(product.category) && (
+                  <li>
+                    <label htmlFor="plan">Wireless plan:</label>{' '}
+                    <select
+                      name="plan"
+                      id="plan"
+                      value={planId}
+                      onChange={(e) => setPlanId(e.target.value)}
+                    >
+                      <option value="">No plan (device only)</option>
+                      {WIRELESS_PLANS.map((plan) => (
+                        <option key={plan.id} value={plan.id}>
+                          {plan.name} - ${plan.monthlyPrice}/mo
+                        </option>
+                      ))}
+                    </select>
+                  </li>
+                )}
                 <li>
                   {product.countInStock > 0 && (
                     <button

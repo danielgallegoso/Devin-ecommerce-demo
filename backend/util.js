@@ -41,4 +41,11 @@ const isAdmin = (req, res, next) => {
   return res.status(401).send({ message: 'Admin Token is not valid.' });
 };
 
-export { getToken, isAuth, isAdmin };
+const calculateMonthlyPlanTotal = (orderItems = []) =>
+  orderItems.reduce(
+    (total, item) =>
+      item && item.plan ? total + Number(item.plan.monthlyPrice) * Number(item.qty) : total,
+    0
+  );
+
+export { getToken, isAuth, isAdmin, calculateMonthlyPlanTotal };

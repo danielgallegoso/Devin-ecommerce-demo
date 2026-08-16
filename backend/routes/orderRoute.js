@@ -1,6 +1,6 @@
 import express from 'express';
 import Order from '../models/orderModel';
-import { isAuth, isAdmin } from '../util';
+import { isAuth, isAdmin, calculateMonthlyPlanTotal } from '../util';
 
 const router = express.Router();
 
@@ -42,6 +42,7 @@ router.post("/", isAuth, async (req, res) => {
     taxPrice: req.body.taxPrice,
     shippingPrice: req.body.shippingPrice,
     totalPrice: req.body.totalPrice,
+    monthlyPlanPrice: calculateMonthlyPlanTotal(req.body.orderItems),
   });
   const newOrderCreated = await newOrder.save();
   res.status(201).send({ message: "New Order Created", data: newOrderCreated });
