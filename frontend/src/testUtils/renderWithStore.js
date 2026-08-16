@@ -15,9 +15,11 @@ import {
   productDetailsReducer,
   productReviewSaveReducer,
 } from '../reducers/productReducers';
+import { orderCreateReducer } from '../reducers/orderReducers';
 
 const rootReducer = combineReducers({
   cart: cartReducer,
+  orderCreate: orderCreateReducer,
   userSignin: userSigninReducer,
   userRegister: userRegisterReducer,
   userUpdate: userUpdateReducer,
