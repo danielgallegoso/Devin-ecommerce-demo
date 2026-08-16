@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { addToCart, removeFromCart } from '../actions/cartActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { calculateItemsPrice } from '../utils/priceCalculator';
 function CartScreen(props) {
 
   const cart = useSelector(state => state.cart);
@@ -78,7 +79,7 @@ function CartScreen(props) {
       <h3>
         Subtotal ( {cartItems.reduce((a, c) => a + c.qty, 0)} items)
         :
-         $ {cartItems.reduce((a, c) => a + c.price * c.qty, 0)}
+         $ {calculateItemsPrice(cartItems)}
       </h3>
       <button onClick={checkoutHandler} className="button primary full-width" disabled={cartItems.length === 0}>
         Proceed to Checkout
