@@ -78,6 +78,7 @@ $ npm start
 - Frontend (React Testing Library): `cd frontend && npm run test:ci`
 - Coverage: `npm run test:coverage` and `cd frontend && npm run test:coverage`
 - Both suites also run on every pull request via `.github/workflows/tests.yml`
+- Test files are colocated with the code they cover as `<module>.test.js`
 
 ## Support
 
