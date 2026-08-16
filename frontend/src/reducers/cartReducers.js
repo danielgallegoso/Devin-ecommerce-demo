@@ -7,13 +7,14 @@ function cartReducer(state = { cartItems: [], shipping: {}, payment: {} }, actio
       const product = state.cartItems.find(x => x.product === item.product);
       if (product) {
         return {
+          ...state,
           cartItems:
             state.cartItems.map(x => x.product === product.product ? item : x)
         };
       }
-      return { cartItems: [...state.cartItems, item] };
+      return { ...state, cartItems: [...state.cartItems, item] };
     case CART_REMOVE_ITEM:
-      return { cartItems: state.cartItems.filter(x => x.product !== action.payload) };
+      return { ...state, cartItems: state.cartItems.filter(x => x.product !== action.payload) };
     case CART_SAVE_SHIPPING:
       return { ...state, shipping: action.payload };
     case CART_SAVE_PAYMENT:

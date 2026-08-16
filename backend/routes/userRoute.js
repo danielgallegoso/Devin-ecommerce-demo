@@ -48,8 +48,8 @@ router.post('/register', async (req, res) => {
     email: req.body.email,
     password: req.body.password,
   });
-  const newUser = await user.save();
-  if (newUser) {
+  try {
+    const newUser = await user.save();
     res.send({
       _id: newUser.id,
       name: newUser.name,
@@ -57,8 +57,12 @@ router.post('/register', async (req, res) => {
       isAdmin: newUser.isAdmin,
       token: getToken(newUser),
     });
-  } else {
-    res.status(401).send({ message: 'Invalid User Data.' });
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(409).send({ message: 'Email is already registered.' });
+    } else {
+      res.status(400).send({ message: 'Invalid User Data.' });
+    }
   }
 });
 
