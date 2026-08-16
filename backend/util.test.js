@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { getToken, isAuth, isAdmin } from './util';
+import { getToken, isAuth, isAdmin, calculateMonthlyPlanTotal } from './util';
 import config from './config';
 
 const buildResponse = () => {
@@ -137,5 +137,41 @@ describe('isAdmin', () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(next).not.toHaveBeenCalled();
+  });
+});
+
+describe('calculateMonthlyPlanTotal', () => {
+  test('sums each order item plan price multiplied by its quantity', () => {
+    // Arrange
+    const orderItems = [
+      { qty: 2, plan: { id: 'go5g', name: 'Go5G', monthlyPrice: 75 } },
+      { qty: 1, plan: { id: 'go5g-next', name: 'Go5G Next', monthlyPrice: 100 } },
+    ];
+
+    // Act
+    const result = calculateMonthlyPlanTotal(orderItems);
+
+    // Assert
+    expect(result).toBe(250);
+  });
+
+  test('ignores order items without a plan', () => {
+    const orderItems = [
+      { qty: 3, plan: null },
+      { qty: 1, plan: { id: 'go5g-plus', name: 'Go5G Plus', monthlyPrice: 90 } },
+    ];
+
+    expect(calculateMonthlyPlanTotal(orderItems)).toBe(90);
+  });
+
+  test('coerces string quantities and prices sent by the client', () => {
+    const orderItems = [{ qty: '2', plan: { id: 'go5g', name: 'Go5G', monthlyPrice: '75' } }];
+
+    expect(calculateMonthlyPlanTotal(orderItems)).toBe(150);
+  });
+
+  test('returns 0 for an empty or missing item list', () => {
+    expect(calculateMonthlyPlanTotal([])).toBe(0);
+    expect(calculateMonthlyPlanTotal()).toBe(0);
   });
 });

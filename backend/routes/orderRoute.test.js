@@ -82,6 +82,75 @@ describe('POST /api/orders', () => {
     expect(response.status).toBe(401);
     expect(await Order.countDocuments()).toBe(0);
   });
+
+  test('stores the wireless plan chosen for a phone and totals it monthly', async () => {
+    // Arrange
+    const user = await createUser();
+    const payload = orderPayload();
+    payload.orderItems[0].plan = { id: 'go5g-plus', name: 'Go5G Plus', monthlyPrice: 90 };
+
+    // Act
+    const response = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${getToken(user)}`)
+      .send(payload);
+
+    // Assert
+    expect(response.status).toBe(201);
+    expect(response.body.data.orderItems[0].plan).toEqual({
+      id: 'go5g-plus',
+      name: 'Go5G Plus',
+      monthlyPrice: 90,
+    });
+    expect(response.body.data.monthlyPlanPrice).toBe(180);
+  });
+
+  test('adds up the plans across every line of a multi-item order', async () => {
+    const user = await createUser();
+    const payload = orderPayload();
+    payload.orderItems[0].plan = { id: 'go5g', name: 'Go5G', monthlyPrice: 75 };
+    payload.orderItems.push({
+      name: 'Phone B',
+      qty: 1,
+      image: '/images/b.jpg',
+      price: '200',
+      product: mongoose.Types.ObjectId(),
+      plan: { id: 'go5g-next', name: 'Go5G Next', monthlyPrice: 100 },
+    });
+
+    const response = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${getToken(user)}`)
+      .send(payload);
+
+    expect(response.body.data.monthlyPlanPrice).toBe(250);
+  });
+
+  test('records no monthly plan charge for a device-only order', async () => {
+    const user = await createUser();
+
+    const response = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${getToken(user)}`)
+      .send(orderPayload());
+
+    expect(response.body.data.monthlyPlanPrice).toBe(0);
+    expect(response.body.data.orderItems[0].plan).toBeNull();
+  });
+
+  test('recomputes the monthly plan charge instead of trusting the client', async () => {
+    const user = await createUser();
+    const payload = orderPayload();
+    payload.orderItems[0].plan = { id: 'go5g', name: 'Go5G', monthlyPrice: 75 };
+    payload.monthlyPlanPrice = 0;
+
+    const response = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${getToken(user)}`)
+      .send(payload);
+
+    expect(response.body.data.monthlyPlanPrice).toBe(150);
+  });
 });
 
 describe('GET /api/orders/mine', () => {

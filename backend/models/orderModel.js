@@ -10,8 +10,18 @@ const paymentSchema = {
   paymentMethod: { type: String, required: true }
 };
 
+const wirelessPlanSchema = new mongoose.Schema(
+  {
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+    monthlyPrice: { type: Number, required: true },
+  },
+  { _id: false }
+);
+
 const orderItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  plan: { type: wirelessPlanSchema, default: null },
   qty: { type: Number, required: true },
   image: { type: String, required: true },
   price: { type: String, required: true },
@@ -31,6 +41,7 @@ const orderSchema = new mongoose.Schema({
   taxPrice: { type: Number },
   shippingPrice: { type: Number },
   totalPrice: { type: Number },
+  monthlyPlanPrice: { type: Number, default: 0 },
   isPaid: { type: Boolean, default: false },
   paidAt: { type: Date },
   isDelivered: { type: Boolean, default: false },

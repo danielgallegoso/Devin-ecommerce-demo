@@ -13,6 +13,7 @@ import {
 import {
   productListReducer,
   productDetailsReducer,
+  productReviewSaveReducer,
 } from '../reducers/productReducers';
 
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   userUpdate: userUpdateReducer,
   productList: productListReducer,
   productDetails: productDetailsReducer,
+  productReviewSave: productReviewSaveReducer,
 });
 
 const createTestStore = (preloadedState = {}) =>

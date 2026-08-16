@@ -17,6 +17,7 @@ const product = {
   image: '/images/a.jpg',
   price: 100,
   countInStock: 5,
+  category: 'Phones',
 };
 
 const buildGetState = (cartItems) => () => ({ cart: { cartItems } });
@@ -45,9 +46,58 @@ describe('addToCart', () => {
         image: '/images/a.jpg',
         price: 100,
         countInStock: 5,
+        category: 'Phones',
+        plan: null,
         qty: 2,
       },
     });
+  });
+
+  test('attaches the selected wireless plan to a phone cart item', async () => {
+    // Arrange
+    Axios.get.mockResolvedValue({ data: product });
+    const dispatch = jest.fn();
+
+    // Act
+    await addToCart('product-1', 1, 'go5g-plus')(dispatch, buildGetState([]));
+
+    // Assert
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: CART_ADD_ITEM,
+        payload: expect.objectContaining({
+          plan: { id: 'go5g-plus', name: 'Go5G Plus', monthlyPrice: 90 },
+        }),
+      })
+    );
+  });
+
+  test('leaves the plan empty when a phone is added without selecting one', async () => {
+    Axios.get.mockResolvedValue({ data: product });
+    const dispatch = jest.fn();
+
+    await addToCart('product-1', 1)(dispatch, buildGetState([]));
+
+    expect(dispatch.mock.calls[0][0].payload.plan).toBeNull();
+  });
+
+  test('does not attach a plan to a product outside the phones category', async () => {
+    Axios.get.mockResolvedValue({ data: { ...product, category: 'Accessories' } });
+    const dispatch = jest.fn();
+
+    await addToCart('product-1', 1, 'go5g')(dispatch, buildGetState([]));
+
+    expect(dispatch.mock.calls[0][0].payload.plan).toBeNull();
+  });
+
+  test('adds nothing when a phone is given an unrecognized plan id', async () => {
+    Axios.get.mockResolvedValue({ data: product });
+    const dispatch = jest.fn();
+
+    await addToCart('product-1', 1, 'go6g')(dispatch, buildGetState([]));
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(Cookie.set).not.toHaveBeenCalled();
   });
 
   test('persists the resulting cart to the cartItems cookie', async () => {

@@ -13,8 +13,12 @@ const cartItem = {
   image: '/images/a.jpg',
   price: 100,
   countInStock: 5,
+  category: 'Phones',
+  plan: null,
   qty: 2,
 };
+
+const go5gPlus = { id: 'go5g-plus', name: 'Go5G Plus', monthlyPrice: 90 };
 
 const routeProps = (overrides = {}) => ({
   match: { params: {} },
@@ -82,6 +86,111 @@ describe('CartScreen', () => {
     await wait(() => expect(store.getState().cart.cartItems).toHaveLength(1));
     expect(Axios.get).toHaveBeenCalledWith('/api/products/product-9');
     expect(store.getState().cart.cartItems[0]).toMatchObject({ product: 'product-9', qty: 3 });
+  });
+
+  test('offers the three wireless plans for a phone in the cart', () => {
+    // Arrange
+    const preloadedState = { cart: { cartItems: [cartItem], shipping: {}, payment: {} } };
+
+    // Act
+    const { getByLabelText } = renderWithStore(<CartScreen {...routeProps()} />, { preloadedState });
+    const planSelect = getByLabelText('Wireless plan for Phone A');
+
+    // Assert
+    expect(planSelect.value).toBe('');
+    expect(Array.from(planSelect.options).map((o) => o.value)).toEqual([
+      '',
+      'go5g',
+      'go5g-plus',
+      'go5g-next',
+    ]);
+  });
+
+  test('does not offer a wireless plan for a product outside the phones category', () => {
+    const accessory = { ...cartItem, category: 'Accessories', name: 'Case A' };
+    const { queryByLabelText } = renderWithStore(<CartScreen {...routeProps()} />, {
+      preloadedState: { cart: { cartItems: [accessory], shipping: {}, payment: {} } },
+    });
+
+    expect(queryByLabelText('Wireless plan for Case A')).toBeNull();
+  });
+
+  test('shows the monthly plan total alongside the item subtotal', () => {
+    const withPlan = { ...cartItem, plan: go5gPlus };
+    const { getByText } = renderWithStore(<CartScreen {...routeProps()} />, {
+      preloadedState: { cart: { cartItems: [withPlan], shipping: {}, payment: {} } },
+    });
+
+    expect(getByText(/\$ 200/)).toBeInTheDocument();
+    expect(getByText(/Wireless plans: \$ 180\/mo/)).toBeInTheDocument();
+  });
+
+  test('hides the monthly plan total when no item carries a plan', () => {
+    const { queryByText } = renderWithStore(<CartScreen {...routeProps()} />, {
+      preloadedState: { cart: { cartItems: [cartItem], shipping: {}, payment: {} } },
+    });
+
+    expect(queryByText(/Wireless plans:/)).toBeNull();
+  });
+
+  test('replaces the plan on the cart item when a different plan is selected', async () => {
+    Axios.get.mockResolvedValue({ data: { _id: 'product-1', ...cartItem } });
+    const { getByLabelText, store } = renderWithStore(<CartScreen {...routeProps()} />, {
+      preloadedState: { cart: { cartItems: [cartItem], shipping: {}, payment: {} } },
+    });
+
+    fireEvent.change(getByLabelText('Wireless plan for Phone A'), {
+      target: { value: 'go5g-next' },
+    });
+
+    await wait(() =>
+      expect(store.getState().cart.cartItems[0].plan).toEqual({
+        id: 'go5g-next',
+        name: 'Go5G Next',
+        monthlyPrice: 100,
+      })
+    );
+  });
+
+  test('keeps the selected plan when only the quantity changes', async () => {
+    Axios.get.mockResolvedValue({ data: { _id: 'product-1', ...cartItem } });
+    const withPlan = { ...cartItem, plan: go5gPlus };
+    const { container, store } = renderWithStore(<CartScreen {...routeProps()} />, {
+      preloadedState: { cart: { cartItems: [withPlan], shipping: {}, payment: {} } },
+    });
+
+    fireEvent.change(container.querySelector('select'), { target: { value: '3' } });
+
+    await wait(() => expect(store.getState().cart.cartItems[0].qty).toBe('3'));
+    expect(store.getState().cart.cartItems[0].plan).toEqual(go5gPlus);
+  });
+
+  test('adds the phone with the plan from the route query on mount', async () => {
+    Axios.get.mockResolvedValue({
+      data: {
+        _id: 'product-9',
+        name: 'Phone Z',
+        image: '/z.jpg',
+        price: 50,
+        countInStock: 2,
+        category: 'Phones',
+      },
+    });
+    const props = routeProps({
+      match: { params: { id: 'product-9' } },
+      location: { search: '?qty=2&plan=go5g' },
+    });
+
+    const { store } = renderWithStore(<CartScreen {...props} />, {
+      preloadedState: { cart: { cartItems: [], shipping: {}, payment: {} } },
+    });
+
+    await wait(() => expect(store.getState().cart.cartItems).toHaveLength(1));
+    expect(store.getState().cart.cartItems[0]).toMatchObject({
+      product: 'product-9',
+      qty: 2,
+      plan: { id: 'go5g', name: 'Go5G', monthlyPrice: 75 },
+    });
   });
 
   test('navigates to sign-in with a shipping redirect when checkout is clicked', () => {
