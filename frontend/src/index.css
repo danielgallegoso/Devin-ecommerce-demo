@@ -512,3 +512,105 @@ tbody > tr:nth-child(odd) {
   background-color: var(--tmo-magenta);
   color: #ffffff;
 }
+
+/* Plans */
+.plans-page {
+  padding: 1rem;
+}
+.plans-hero {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+.plans-hero h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+.plans-hero p {
+  color: #606060;
+}
+.plans-lines {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+.plans-lines span {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+.plans-lines .button {
+  min-width: 4rem;
+  text-align: center;
+}
+.plans {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  padding: 0;
+}
+.plans li {
+  list-style-type: none;
+  flex: 0 1 32rem;
+  margin: 1rem;
+}
+.plan {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2rem;
+  border: 0.1rem #d0d0d0 solid;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+}
+.plan-popular {
+  border: 0.2rem var(--tmo-magenta) solid;
+}
+.plan-badge {
+  align-self: flex-start;
+  background-color: var(--tmo-magenta);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 0.3rem 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+.plan-name {
+  font-size: 2.4rem;
+  margin: 0;
+}
+.plan-tagline {
+  color: #606060;
+  min-height: 4.5rem;
+}
+.plan-price {
+  font-size: 3.4rem;
+  font-weight: bold;
+  color: var(--tmo-magenta);
+}
+.plan-price-unit {
+  font-size: 1.4rem;
+  font-weight: normal;
+  color: #606060;
+  margin-left: 0.5rem;
+}
+.plan-total {
+  font-size: 1.4rem;
+  color: #404040;
+  margin-bottom: 1rem;
+}
+.plan-features {
+  padding-left: 2rem;
+  margin: 0;
+}
+.plan-features li {
+  list-style-type: disc;
+  margin: 0.6rem 0;
+  font-size: 1.4rem;
+}
+.plans-disclaimer {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #808080;
+}
