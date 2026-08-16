@@ -38,6 +38,13 @@ describe('calculateItemsPrice', () => {
       2
     );
   });
+
+  test('handles the string quantity produced by the cart quantity select', () => {
+    expect(calculateItemsPrice([cartItem({ price: 19.99, qty: '3' })])).toBeCloseTo(
+      59.97,
+      2
+    );
+  });
 });
 
 describe('calculateShippingPrice', () => {
