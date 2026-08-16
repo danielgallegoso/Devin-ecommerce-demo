@@ -20,7 +20,9 @@
   "scripts": {
     "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
-    "test": "react-scripts test",
+    "test": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts test",
+    "test:ci": "cross-env CI=true SKIP_PREFLIGHT_CHECK=true react-scripts test",
+    "test:coverage": "cross-env CI=true SKIP_PREFLIGHT_CHECK=true react-scripts test --coverage",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
