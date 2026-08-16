@@ -51,3 +51,57 @@ describe('POST /api/users/register', () => {
     expect(await User.countDocuments()).toBe(0);
   });
 });
+
+describe('POST /api/users/signin', () => {
+  const signup = (overrides = {}) =>
+    request(app).post('/api/users/register').send(registerPayload(overrides));
+
+  test('returns the user profile and a token for valid credentials', async () => {
+    // Arrange
+    await signup();
+
+    // Act
+    const response = await request(app)
+      .post('/api/users/signin')
+      .send({ email: 'grace@example.com', password: 'compiler' });
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      name: 'Grace Hopper',
+      email: 'grace@example.com',
+      isAdmin: false,
+    });
+    expect(typeof response.body.token).toBe('string');
+  });
+
+  test('responds 401 when the password is wrong', async () => {
+    await signup();
+
+    const response = await request(app)
+      .post('/api/users/signin')
+      .send({ email: 'grace@example.com', password: 'wrong' });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: 'Invalid Email or Password.' });
+  });
+
+  test('responds 401 when the email is not registered', async () => {
+    const response = await request(app)
+      .post('/api/users/signin')
+      .send({ email: 'nobody@example.com', password: 'compiler' });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ message: 'Invalid Email or Password.' });
+  });
+
+  test('never returns the password in the signin response', async () => {
+    await signup();
+
+    const response = await request(app)
+      .post('/api/users/signin')
+      .send({ email: 'grace@example.com', password: 'compiler' });
+
+    expect(response.body).not.toHaveProperty('password');
+  });
+});
