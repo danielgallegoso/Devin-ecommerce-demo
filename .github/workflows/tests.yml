@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
+      - interview-demo-prep
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: npm test --if-present
+
+  frontend:
+    name: Frontend tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: npm run test:ci --if-present
