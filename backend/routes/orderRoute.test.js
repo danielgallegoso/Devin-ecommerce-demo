@@ -192,6 +192,28 @@ describe('GET /api/orders/:id', () => {
     expect(response.body._id).toBe(String(order._id));
   });
 
+  test('returns the stored wireless plan and monthly charge of the order', async () => {
+    // Arrange
+    const user = await createUser();
+    const items = orderPayload().orderItems;
+    items[0].plan = { id: 'go5g-plus', name: 'Go5G Plus', monthlyPrice: 90 };
+    const order = await createOrder(user, { orderItems: items, monthlyPlanPrice: 180 });
+
+    // Act
+    const response = await request(app)
+      .get(`/api/orders/${order._id}`)
+      .set('Authorization', `Bearer ${getToken(user)}`);
+
+    // Assert
+    expect(response.status).toBe(200);
+    expect(response.body.orderItems[0].plan).toEqual({
+      id: 'go5g-plus',
+      name: 'Go5G Plus',
+      monthlyPrice: 90,
+    });
+    expect(response.body.monthlyPlanPrice).toBe(180);
+  });
+
   test('responds 404 when the order does not exist', async () => {
     const user = await createUser();
 

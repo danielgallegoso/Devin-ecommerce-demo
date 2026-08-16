@@ -39,6 +39,35 @@ describe('cartReducer', () => {
     expect(result.cartItems[0].qty).toBe(3);
   });
 
+  test('swaps the wireless plan when the same product is re-added with another plan', () => {
+    // Arrange
+    const state = {
+      cartItems: [buildItem({ plan: { id: 'go5g', name: 'Go5G', monthlyPrice: 75 } })],
+      shipping: {},
+      payment: {},
+    };
+    const replanned = buildItem({ plan: { id: 'go5g-next', name: 'Go5G Next', monthlyPrice: 100 } });
+
+    // Act
+    const result = cartReducer(state, { type: CART_ADD_ITEM, payload: replanned });
+
+    // Assert
+    expect(result.cartItems).toHaveLength(1);
+    expect(result.cartItems[0].plan).toEqual({ id: 'go5g-next', name: 'Go5G Next', monthlyPrice: 100 });
+  });
+
+  test('drops the wireless plan when the same product is re-added device-only', () => {
+    const state = {
+      cartItems: [buildItem({ plan: { id: 'go5g-plus', name: 'Go5G Plus', monthlyPrice: 90 } })],
+      shipping: {},
+      payment: {},
+    };
+
+    const result = cartReducer(state, { type: CART_ADD_ITEM, payload: buildItem({ plan: null }) });
+
+    expect(result.cartItems[0].plan).toBeNull();
+  });
+
   test('keeps other products untouched when adding a different product', () => {
     const state = { cartItems: [buildItem()], shipping: {}, payment: {} };
     const otherItem = buildItem({ product: 'product-2', name: 'Phone B' });
