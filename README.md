@@ -72,6 +72,13 @@ $ npm start
 - Run http://localhost:3000/products
 - Click create product and enter product info
 
+## Run Tests
+
+- Backend (Jest + supertest against an in-memory MongoDB): `npm test`
+- Frontend (React Testing Library): `cd frontend && npm run test:ci`
+- Coverage: `npm run test:coverage` and `cd frontend && npm run test:coverage`
+- Both suites also run on every pull request via `.github/workflows/tests.yml`
+
 ## Support
 
 - Q/A: https://webacademy.pro/oldamazona
