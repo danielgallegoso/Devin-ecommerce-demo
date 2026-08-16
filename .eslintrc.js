@@ -14,5 +14,15 @@ module.exports =
   plugins: ['react'],
   rules: {
     "no-underscore-dangle": 0
-  }
+  },
+  overrides: [
+    {
+      files: ['**/*.test.js', 'backend/testUtils/**/*.js'],
+      env: { jest: true },
+      rules: {
+        'import/no-extraneous-dependencies': [2, { devDependencies: true }],
+        'import/prefer-default-export': 0
+      }
+    }
+  ]
 }
