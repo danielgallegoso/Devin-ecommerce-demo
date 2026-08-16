@@ -7,6 +7,7 @@ on:
       - master
       - main
       - interview-demo-prep
+      - Devin-Demo-Prep
 
 jobs:
   backend:
