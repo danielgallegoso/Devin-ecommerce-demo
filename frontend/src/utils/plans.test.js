@@ -87,6 +87,73 @@ describe('getPlanPricing', () => {
   });
 });
 
+describe('getPlanPricing pricing invariants', () => {
+  test('splits the monthly total across the lines without losing money', () => {
+    // Arrange
+    const plan = findPlan('go5g');
+
+    // Act
+    const { monthlyTotal, pricePerLine } = getPlanPricing(plan, 3);
+
+    // Assert
+    expect(pricePerLine * 3).toBeCloseTo(monthlyTotal, 10);
+  });
+
+  test('charges the monthly total listed in the plan price table', () => {
+    PLANS.forEach((plan) => {
+      for (let lineCount = 1; lineCount <= MAX_LINES; lineCount += 1) {
+        expect(getPlanPricing(plan, lineCount).monthlyTotal).toBe(
+          plan.monthlyPriceByLineCount[lineCount]
+        );
+      }
+    });
+  });
+
+  test('raises the monthly total for every line that is added', () => {
+    PLANS.forEach((plan) => {
+      for (let lineCount = 2; lineCount <= MAX_LINES; lineCount += 1) {
+        expect(getPlanPricing(plan, lineCount).monthlyTotal).toBeGreaterThan(
+          getPlanPricing(plan, lineCount - 1).monthlyTotal
+        );
+      }
+    });
+  });
+
+  test('never raises the per line price for every line that is added', () => {
+    PLANS.forEach((plan) => {
+      for (let lineCount = 2; lineCount <= MAX_LINES; lineCount += 1) {
+        expect(getPlanPricing(plan, lineCount).pricePerLine).toBeLessThan(
+          getPlanPricing(plan, lineCount - 1).pricePerLine
+        );
+      }
+    });
+  });
+
+  test('throws an error when the line count is a numeric string', () => {
+    expect(() => getPlanPricing(findPlan('go5g'), '2')).toThrow(
+      'Line count must be a whole number of at least 1'
+    );
+  });
+
+  test('throws an error when the line count is missing', () => {
+    expect(() => getPlanPricing(findPlan('go5g'))).toThrow(
+      'Line count must be a whole number of at least 1'
+    );
+  });
+
+  test('leaves the plan price table unchanged after pricing', () => {
+    // Arrange
+    const plan = findPlan('essentials');
+    const pricesBefore = { ...plan.monthlyPriceByLineCount };
+
+    // Act
+    getPlanPricing(plan, 2);
+
+    // Assert
+    expect(plan.monthlyPriceByLineCount).toEqual(pricesBefore);
+  });
+});
+
 describe('formatPrice', () => {
   test('formats a whole dollar amount with two decimal places', () => {
     expect(formatPrice(50)).toBe('$50.00');
