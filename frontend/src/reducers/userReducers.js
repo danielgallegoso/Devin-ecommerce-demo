@@ -1,42 +1,22 @@
 import { USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESS, USER_SIGNIN_FAIL, USER_REGISTER_REQUEST, USER_REGISTER_SUCCESS, USER_REGISTER_FAIL, USER_LOGOUT, USER_UPDATE_REQUEST, USER_UPDATE_SUCCESS, USER_UPDATE_FAIL } from "../constants/userConstants";
+import { createRequestReducer } from "../utils/createRequestReducer";
 
-function userSigninReducer(state = {}, action) {
-  switch (action.type) {
-    case USER_SIGNIN_REQUEST:
-      return { loading: true };
-    case USER_SIGNIN_SUCCESS:
-      return { loading: false, userInfo: action.payload };
-    case USER_SIGNIN_FAIL:
-      return { loading: false, error: action.payload };
-    case USER_LOGOUT:
-      return {};
-    default: return state;
-  }
-}
+const userSigninReducer = createRequestReducer({
+  types: [USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESS, USER_SIGNIN_FAIL],
+  resetType: USER_LOGOUT,
+  successKey: 'userInfo'
+});
 
-function userUpdateReducer(state = {}, action) {
-  switch (action.type) {
-    case USER_UPDATE_REQUEST:
-      return { loading: true };
-    case USER_UPDATE_SUCCESS:
-      return { loading: false, userInfo: action.payload };
-    case USER_UPDATE_FAIL:
-      return { loading: false, error: action.payload };
-    default: return state;
-  }
-}
+const userUpdateReducer = createRequestReducer({
+  types: [USER_UPDATE_REQUEST, USER_UPDATE_SUCCESS, USER_UPDATE_FAIL],
+  successKey: 'userInfo'
+});
 
-function userRegisterReducer(state = {}, action) {
-  switch (action.type) {
-    case USER_REGISTER_REQUEST:
-      return { loading: true };
-    case USER_REGISTER_SUCCESS:
-      return { loading: false, userInfo: action.payload };
-    case USER_REGISTER_FAIL:
-      return { loading: false, error: action.payload };
-    default: return state;
-  }
-}
+const userRegisterReducer = createRequestReducer({
+  types: [USER_REGISTER_REQUEST, USER_REGISTER_SUCCESS, USER_REGISTER_FAIL],
+  successKey: 'userInfo'
+});
+
 export {
   userSigninReducer, userRegisterReducer, userUpdateReducer
 }

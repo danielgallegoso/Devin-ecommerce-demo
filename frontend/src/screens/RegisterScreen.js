@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { register } from '../actions/userActions';
+import LoadingError from '../components/LoadingError';
+import { getRedirectPath } from '../utils/queryParams';
 
 function RegisterScreen(props) {
 
@@ -13,7 +15,7 @@ function RegisterScreen(props) {
   const { loading, userInfo, error } = userRegister;
   const dispatch = useDispatch();
 
-  const redirect = props.location.search ? props.location.search.split("=")[1] : '/';
+  const redirect = getRedirectPath(props.location.search);
   useEffect(() => {
     if (userInfo) {
       props.history.push(redirect);
@@ -34,8 +36,7 @@ function RegisterScreen(props) {
           <h2>Create Account</h2>
         </li>
         <li>
-          {loading && <div>Loading...</div>}
-          {error && <div>{error}</div>}
+          <LoadingError loading={loading} error={error} />
         </li>
         <li>
           <label htmlFor="name">

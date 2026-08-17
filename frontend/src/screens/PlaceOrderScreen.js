@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import CheckoutSteps from '../components/CheckoutSteps';
+import CartItemList from '../components/CartItemList';
+import OrderSummary from '../components/OrderSummary';
 import { createOrder } from '../actions/orderActions';
-import { calculateItemsPrice } from '../utils/priceCalculator';
+import { calculateOrderPrices } from '../utils/priceCalculator';
 function PlaceOrderScreen(props) {
 
   const cart = useSelector(state => state.cart);
   const orderCreate = useSelector(state => state.orderCreate);
-  const { loading, success, error, order } = orderCreate;
+  const { success, order } = orderCreate;
 
   const { cartItems, shipping, payment } = cart;
   if (!shipping.address) {
@@ -16,10 +17,7 @@ function PlaceOrderScreen(props) {
   } else if (!payment.paymentMethod) {
     props.history.push("/payment");
   }
-  const itemsPrice = calculateItemsPrice(cartItems);
-  const shippingPrice = itemsPrice > 100 ? 0 : 10;
-  const taxPrice = 0.15 * itemsPrice;
-  const totalPrice = itemsPrice + shippingPrice + taxPrice;
+  const { itemsPrice, shippingPrice, taxPrice, totalPrice } = calculateOrderPrices(cartItems);
 
   const dispatch = useDispatch();
 
@@ -57,76 +55,20 @@ function PlaceOrderScreen(props) {
           </div>
         </div>
         <div>
-          <ul className="cart-list-container">
-            <li>
-              <h3>
-                Shopping Cart
-          </h3>
-              <div>
-                Price
-          </div>
-            </li>
-            {
-              cartItems.length === 0 ?
-                <div>
-                  Cart is empty
-          </div>
-                :
-                cartItems.map(item =>
-                  <li>
-                    <div className="cart-image">
-                      <img src={item.image} alt="product" />
-                    </div>
-                    <div className="cart-name">
-                      <div>
-                        <Link to={"/product/" + item.product}>
-                          {item.name}
-                        </Link>
-
-                      </div>
-                      <div>
-                        Qty: {item.qty}
-                      </div>
-                    </div>
-                    <div className="cart-price">
-                      ${item.price}
-                    </div>
-                  </li>
-                )
-            }
-          </ul>
+          <CartItemList items={cartItems} />
         </div>
-
-      
       </div>
       <div className="placeorder-action">
-        <ul>
+        <OrderSummary
+          itemsPrice={itemsPrice}
+          shippingPrice={shippingPrice}
+          taxPrice={taxPrice}
+          totalPrice={totalPrice}
+        >
           <li>
             <button className="button primary full-width" onClick={placeOrderHandler} >Place Order</button>
           </li>
-          <li>
-            <h3>Order Summary</h3>
-          </li>
-          <li>
-            <div>Items</div>
-            <div>${itemsPrice}</div>
-          </li>
-          <li>
-            <div>Shipping</div>
-            <div>${shippingPrice}</div>
-          </li>
-          <li>
-            <div>Tax</div>
-            <div>${taxPrice}</div>
-          </li>
-          <li>
-            <div>Order Total</div>
-            <div>${totalPrice}</div>
-          </li>
-        </ul>
-
-
-
+        </OrderSummary>
       </div>
 
     </div>

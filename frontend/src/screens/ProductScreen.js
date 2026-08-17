@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { detailsProduct, saveProductReview } from '../actions/productActions';
 import Rating from '../components/Rating';
+import LoadingError from '../components/LoadingError';
 import { PRODUCT_REVIEW_SAVE_RESET } from '../constants/productConstants';
 
 function ProductScreen(props) {
@@ -49,12 +50,9 @@ function ProductScreen(props) {
       <div className="back-to-result">
         <Link to="/">Back to result</Link>
       </div>
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div>{error} </div>
-      ) : (
-        <>
+      <LoadingError loading={loading} error={error}>
+        {() => (
+          <>
           <div className="details">
             <div className="details-image">
               <img src={product.image} alt="product"></img>
@@ -172,9 +170,10 @@ function ProductScreen(props) {
                 )}
               </li>
             </ul>
-          </div>
-        </>
-      )}
+            </div>
+          </>
+        )}
+      </LoadingError>
     </div>
   );
 }

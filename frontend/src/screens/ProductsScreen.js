@@ -6,6 +6,7 @@ import {
   listProducts,
   deleteProdcut,
 } from '../actions/productActions';
+import LoadingError from '../components/LoadingError';
 
 function ProductsScreen(props) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -29,11 +30,7 @@ function ProductsScreen(props) {
   } = productSave;
 
   const productDelete = useSelector((state) => state.productDelete);
-  const {
-    loading: loadingDelete,
-    success: successDelete,
-    error: errorDelete,
-  } = productDelete;
+  const { success: successDelete } = productDelete;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -111,8 +108,7 @@ function ProductsScreen(props) {
                 <h2>Create Product</h2>
               </li>
               <li>
-                {loadingSave && <div>Loading...</div>}
-                {errorSave && <div>{errorSave}</div>}
+                <LoadingError loading={loadingSave} error={errorSave} />
               </li>
 
               <li>

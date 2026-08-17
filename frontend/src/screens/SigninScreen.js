@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { signin } from '../actions/userActions';
+import LoadingError from '../components/LoadingError';
+import { getRedirectPath } from '../utils/queryParams';
 
 function SigninScreen(props) {
 
@@ -10,7 +12,7 @@ function SigninScreen(props) {
   const userSignin = useSelector(state => state.userSignin);
   const { loading, userInfo, error } = userSignin;
   const dispatch = useDispatch();
-  const redirect = props.location.search ? props.location.search.split("=")[1] : '/';
+  const redirect = getRedirectPath(props.location.search);
   useEffect(() => {
     if (userInfo) {
       props.history.push(redirect);
@@ -32,8 +34,7 @@ function SigninScreen(props) {
           <h2>Sign-In</h2>
         </li>
         <li>
-          {loading && <div>Loading...</div>}
-          {error && <div>{error}</div>}
+          <LoadingError loading={loading} error={error} />
         </li>
         <li>
           <label htmlFor="email">

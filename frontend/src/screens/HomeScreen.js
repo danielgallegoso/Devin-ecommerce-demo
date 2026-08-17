@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { listProducts } from '../actions/productActions';
 import Rating from '../components/Rating';
+import LoadingError from '../components/LoadingError';
 
 function HomeScreen(props) {
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -53,11 +54,7 @@ function HomeScreen(props) {
           </select>
         </li>
       </ul>
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div>{error}</div>
-      ) : (
+      <LoadingError loading={loading} error={error}>
         <ul className="products">
           {products.map((product) => (
             <li key={product._id}>
@@ -84,7 +81,7 @@ function HomeScreen(props) {
             </li>
           ))}
         </ul>
-      )}
+      </LoadingError>
     </>
   );
 }

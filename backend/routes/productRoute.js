@@ -5,6 +5,24 @@ import { isAuth, isAdmin } from '../util';
 
 const router = express.Router();
 
+const editableProductFields = [
+  'name',
+  'price',
+  'image',
+  'brand',
+  'category',
+  'countInStock',
+  'description',
+];
+
+const pickProductFields = (body) =>
+  editableProductFields.reduce((fields, field) => {
+    if (body[field] !== undefined) {
+      fields[field] = body[field];
+    }
+    return fields;
+  }, {});
+
 router.get('/', async (req, res) => {
   const category = req.query.category ? { category: req.query.category } : {};
   const searchKeyword = req.query.searchKeyword
@@ -70,13 +88,7 @@ router.put('/:id', isAuth, isAdmin, async (req, res) => {
   const productId = req.params.id;
   const product = await Product.findById(productId);
   if (product) {
-    product.name = req.body.name;
-    product.price = req.body.price;
-    product.image = req.body.image;
-    product.brand = req.body.brand;
-    product.category = req.body.category;
-    product.countInStock = req.body.countInStock;
-    product.description = req.body.description;
+    product.set(pickProductFields(req.body));
     const updatedProduct = await product.save();
     if (updatedProduct) {
       return res
@@ -99,13 +111,7 @@ router.delete('/:id', isAuth, isAdmin, async (req, res) => {
 
 router.post('/', isAuth, isAdmin, async (req, res) => {
   const product = new Product({
-    name: req.body.name,
-    price: req.body.price,
-    image: req.body.image,
-    brand: req.body.brand,
-    category: req.body.category,
-    countInStock: req.body.countInStock,
-    description: req.body.description,
+    ...pickProductFields(req.body),
     rating: req.body.rating,
     numReviews: req.body.numReviews,
   });
