@@ -14,6 +14,7 @@ import PlaceOrderScreen from './screens/PlaceOrderScreen';
 import OrderScreen from './screens/OrderScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import OrdersScreen from './screens/OrdersScreen';
+import PlansScreen from './screens/PlansScreen';
 
 function App() {
   const userSignin = useSelector((state) => state.userSignin);
@@ -40,6 +41,7 @@ function App() {
             </Link>
           </div>
           <div className="header-links">
+            <Link to="/plans">Plans</Link>
             <Link to="/cart">Cart</Link>
             {userInfo ? (
               <Link to="/profile">{userInfo.name}</Link>
@@ -85,6 +87,7 @@ function App() {
         </div>
         <main className="main">
           <div className="content">
+            <Route path="/plans" component={PlansScreen} />
             <Route path="/orders" component={OrdersScreen} />
             <Route path="/profile" component={ProfileScreen} />
             <Route path="/order/:id" component={OrderScreen} />
