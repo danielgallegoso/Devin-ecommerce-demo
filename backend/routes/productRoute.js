@@ -1,16 +1,19 @@
 import express from 'express';
 import Product from '../models/productModel';
 import data from '../data';
-import { isAuth, isAdmin } from '../util';
+import config from '../config';
+import { isAuth, isAdmin, isNonEmptyString, escapeRegExp } from '../util';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const category = req.query.category ? { category: req.query.category } : {};
-  const searchKeyword = req.query.searchKeyword
+  const category = isNonEmptyString(req.query.category)
+    ? { category: req.query.category }
+    : {};
+  const searchKeyword = isNonEmptyString(req.query.searchKeyword)
     ? {
         name: {
-          $regex: req.query.searchKeyword,
+          $regex: escapeRegExp(req.query.searchKeyword.slice(0, 100)),
           $options: 'i',
         },
       }
@@ -27,7 +30,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/seed', async (req, res) => {
-  if (process.env.NODE_ENV === 'production') {
+  if (config.isProduction) {
     return res.status(404).send({ message: 'Not Found' });
   }
   await Product.deleteMany({});
@@ -47,10 +50,19 @@ router.get('/:id', async (req, res) => {
 router.post('/:id/reviews', isAuth, async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (product) {
+    const rating = Number(req.body.rating);
+    if (
+      !isNonEmptyString(req.body.comment) ||
+      !Number.isFinite(rating) ||
+      rating < 1 ||
+      rating > 5
+    ) {
+      return res.status(400).send({ message: 'Invalid Review Data.' });
+    }
     const review = {
-      name: req.body.name,
-      rating: Number(req.body.rating),
-      comment: req.body.comment,
+      name: req.user.name,
+      rating,
+      comment: req.body.comment.slice(0, 1000),
     };
     product.reviews.push(review);
     product.numReviews = product.reviews.length;
@@ -58,13 +70,12 @@ router.post('/:id/reviews', isAuth, async (req, res) => {
       product.reviews.reduce((a, c) => c.rating + a, 0) /
       product.reviews.length;
     const updatedProduct = await product.save();
-    res.status(201).send({
+    return res.status(201).send({
       data: updatedProduct.reviews[updatedProduct.reviews.length - 1],
       message: 'Review saved successfully.',
     });
-  } else {
-    res.status(404).send({ message: 'Product Not Found' });
   }
+  return res.status(404).send({ message: 'Product Not Found' });
 });
 router.put('/:id', isAuth, isAdmin, async (req, res) => {
   const productId = req.params.id;
