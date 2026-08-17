@@ -107,7 +107,7 @@ describe('CartScreen', () => {
 
     fireEvent.change(container.querySelector('select'), { target: { value: '3' } });
 
-    await wait(() => expect(subtotalText()).toContain('$ 300'));
+    await wait(() => expect(subtotalText()).toBe('Subtotal ( 3 items) : $ 300'));
   });
 
   test('adds the product from the route to the cart on load', async () => {
