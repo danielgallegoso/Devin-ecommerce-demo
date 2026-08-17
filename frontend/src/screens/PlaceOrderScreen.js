@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { createOrder } from '../actions/orderActions';
-import { calculateItemsPrice } from '../utils/priceCalculator';
+import {
+  calculateItemsPrice,
+  calculateShippingPrice,
+  calculateTaxPrice,
+  calculateOrderTotal,
+} from '../utils/priceCalculator';
 function PlaceOrderScreen(props) {
 
   const cart = useSelector(state => state.cart);
@@ -17,9 +22,9 @@ function PlaceOrderScreen(props) {
     props.history.push("/payment");
   }
   const itemsPrice = calculateItemsPrice(cartItems);
-  const shippingPrice = itemsPrice > 100 ? 0 : 10;
-  const taxPrice = 0.15 * itemsPrice;
-  const totalPrice = itemsPrice + shippingPrice + taxPrice;
+  const shippingPrice = calculateShippingPrice(itemsPrice);
+  const taxPrice = calculateTaxPrice(itemsPrice);
+  const totalPrice = calculateOrderTotal(itemsPrice);
 
   const dispatch = useDispatch();
 
