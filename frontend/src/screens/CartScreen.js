@@ -7,7 +7,7 @@ function CartScreen(props) {
 
   const cart = useSelector(state => state.cart);
 
-  const { cartItems } = cart;
+  const { cartItems, error } = cart;
 
   const productId = props.match.params.id;
   const qty = props.location.search ? Number(props.location.search.split("=")[1]) : 1;
@@ -27,6 +27,7 @@ function CartScreen(props) {
 
   return <div className="cart">
     <div className="cart-list">
+      {error && <div>{error}</div>}
       <ul className="cart-list-container">
         <li>
           <h3>

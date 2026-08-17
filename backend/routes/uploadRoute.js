@@ -3,6 +3,21 @@ import multer from 'multer';
 import multerS3 from 'multer-s3';
 import aws from 'aws-sdk';
 import config from '../config';
+import { HttpError } from '../errors';
+
+const uploadSingleImage = (multerUpload) => (req, res, next) => {
+  multerUpload.single('image')(req, res, (error) => {
+    if (error) {
+      next(new HttpError(400, error.message));
+      return;
+    }
+    if (!req.file) {
+      next(new HttpError(400, 'No image file was uploaded.'));
+      return;
+    }
+    next();
+  });
+};
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -17,7 +32,7 @@ const upload = multer({ storage });
 
 const router = express.Router();
 
-router.post('/', upload.single('image'), (req, res) => {
+router.post('/', uploadSingleImage(upload), (req, res) => {
   res.send(`/${req.file.path}`);
 });
 
@@ -36,7 +51,7 @@ const storageS3 = multerS3({
   },
 });
 const uploadS3 = multer({ storage: storageS3 });
-router.post('/s3', uploadS3.single('image'), (req, res) => {
+router.post('/s3', uploadSingleImage(uploadS3), (req, res) => {
   res.send(req.file.location);
 });
 export default router;

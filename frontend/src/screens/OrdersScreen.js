@@ -29,6 +29,9 @@ function OrdersScreen(props) {
         <h3>Orders</h3>
       </div>
       <div className="order-list">
+        {error && <div>{error}</div>}
+        {loadingDelete && <div>Deleting...</div>}
+        {errorDelete && <div>{errorDelete}</div>}
 
         <table className="table">
           <thead>

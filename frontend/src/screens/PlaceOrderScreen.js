@@ -102,6 +102,8 @@ function PlaceOrderScreen(props) {
       <div className="placeorder-action">
         <ul>
           <li>
+            {loading && <div>Placing Order...</div>}
+            {error && <div>{error}</div>}
             <button className="button primary full-width" onClick={placeOrderHandler} >Place Order</button>
           </li>
           <li>

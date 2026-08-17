@@ -14,7 +14,10 @@ function ProductScreen(props) {
   const productDetails = useSelector((state) => state.productDetails);
   const { product, loading, error } = productDetails;
   const productReviewSave = useSelector((state) => state.productReviewSave);
-  const { success: productSaveSuccess } = productReviewSave;
+  const {
+    success: productSaveSuccess,
+    error: productSaveError,
+  } = productReviewSave;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -135,6 +138,11 @@ function ProductScreen(props) {
                 {userInfo ? (
                   <form onSubmit={submitHandler}>
                     <ul className="form-container">
+                      {productSaveError && (
+                        <li>
+                          <div>{productSaveError}</div>
+                        </li>
+                      )}
                       <li>
                         <label htmlFor="rating">Rating</label>
                         <select

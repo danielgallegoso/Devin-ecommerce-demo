@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../utils/errorMessage';
 import {
   PRODUCT_LIST_REQUEST,
   PRODUCT_LIST_SUCCESS,
@@ -35,7 +36,7 @@ const listProducts = (
     );
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({ type: PRODUCT_LIST_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_LIST_FAIL, payload: getErrorMessage(error) });
   }
 };
 
@@ -65,7 +66,7 @@ const saveProduct = (product) => async (dispatch, getState) => {
       dispatch({ type: PRODUCT_SAVE_SUCCESS, payload: data });
     }
   } catch (error) {
-    dispatch({ type: PRODUCT_SAVE_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_SAVE_FAIL, payload: getErrorMessage(error) });
   }
 };
 
@@ -75,7 +76,7 @@ const detailsProduct = (productId) => async (dispatch) => {
     const { data } = await axios.get('/api/products/' + productId);
     dispatch({ type: PRODUCT_DETAILS_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({ type: PRODUCT_DETAILS_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_DETAILS_FAIL, payload: getErrorMessage(error) });
   }
 };
 
@@ -92,7 +93,7 @@ const deleteProdcut = (productId) => async (dispatch, getState) => {
     });
     dispatch({ type: PRODUCT_DELETE_SUCCESS, payload: data, success: true });
   } catch (error) {
-    dispatch({ type: PRODUCT_DELETE_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_DELETE_FAIL, payload: getErrorMessage(error) });
   }
 };
 
@@ -115,8 +116,7 @@ const saveProductReview = (productId, review) => async (dispatch, getState) => {
     );
     dispatch({ type: PRODUCT_REVIEW_SAVE_SUCCESS, payload: data });
   } catch (error) {
-    // report error
-    dispatch({ type: PRODUCT_REVIEW_SAVE_FAIL, payload: error.message });
+    dispatch({ type: PRODUCT_REVIEW_SAVE_FAIL, payload: getErrorMessage(error) });
   }
 };
 

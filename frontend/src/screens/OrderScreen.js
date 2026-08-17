@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { createOrder, detailsOrder, payOrder } from '../actions/orderActions';
@@ -8,6 +8,7 @@ function OrderScreen(props) {
   const orderPay = useSelector(state => state.orderPay);
   const { loading: loadingPay, success: successPay, error: errorPay } = orderPay;
   const dispatch = useDispatch();
+  const [paypalError, setPaypalError] = useState('');
   useEffect(() => {
     if (successPay) {
       props.history.push("/profile");
@@ -98,9 +99,12 @@ function OrderScreen(props) {
           <ul>
             <li className="placeorder-actions-payment">
               {loadingPay && <div>Finishing Payment...</div>}
+              {errorPay && <div>{errorPay}</div>}
+              {paypalError && <div>{paypalError}</div>}
               {!order.isPaid &&
                 <PaypalButton
                   amount={order.totalPrice}
+                  onError={setPaypalError}
                   onSuccess={handleSuccessPayment} />
               }
             </li>

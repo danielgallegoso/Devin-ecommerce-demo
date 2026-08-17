@@ -1,6 +1,7 @@
 import Axios from "axios";
 import Cookie from "js-cookie";
-import { CART_ADD_ITEM, CART_REMOVE_ITEM, CART_SAVE_SHIPPING, CART_SAVE_PAYMENT } from "../constants/cartConstants";
+import { CART_ADD_ITEM, CART_ADD_ITEM_FAIL, CART_REMOVE_ITEM, CART_SAVE_SHIPPING, CART_SAVE_PAYMENT } from "../constants/cartConstants";
+import { getErrorMessage } from "../utils/errorMessage";
 
 const addToCart = (productId, qty) => async (dispatch, getState) => {
   try {
@@ -19,7 +20,7 @@ const addToCart = (productId, qty) => async (dispatch, getState) => {
     Cookie.set("cartItems", JSON.stringify(cartItems));
 
   } catch (error) {
-
+    dispatch({ type: CART_ADD_ITEM_FAIL, payload: getErrorMessage(error) });
   }
 }
 const removeFromCart = (productId) => (dispatch, getState) => {

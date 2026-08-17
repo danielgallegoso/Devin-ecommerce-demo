@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-function PaypalButton(props) {
+import { getErrorMessage } from '../utils/errorMessage';
+function PaypalButton({ onSuccess, onError, ...rest }) {
   const [sdkReady, setSdkReady] = useState(false);
+  const [sdkError, setSdkError] = useState('');
 
   const addPaypalSdk = async () => {
-    const result = await axios.get("/api/config/paypal");
-    const clientID = result.data;
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = 'https://www.paypal.com/sdk/js?client-id=' + clientID;
-    script.async = true;
-    script.onload = () => {
-      setSdkReady(true);
+    try {
+      const result = await axios.get("/api/config/paypal");
+      const clientID = result.data;
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://www.paypal.com/sdk/js?client-id=' + clientID;
+      script.async = true;
+      script.onload = () => {
+        setSdkReady(true);
+      }
+      script.onerror = () => {
+        setSdkError('Could not load the PayPal checkout script.');
+      }
+      document.body.appendChild(script);
+    } catch (error) {
+      setSdkError(getErrorMessage(error));
     }
-    document.body.appendChild(script);
   }
 
   const createOrder = (data, actions) => actions.order.create({
@@ -22,16 +31,25 @@ function PaypalButton(props) {
       {
         amount: {
           currency_code: 'USD',
-          value: props.amount
+          value: rest.amount
         }
       }
     ]
   });
 
+  const reportError = (error) => {
+    const message = getErrorMessage(error);
+    if (onError) {
+      onError(message);
+      return;
+    }
+    setSdkError(message);
+  };
+
   const onApprove = (data, actions) => actions.order
     .capture()
-    .then(details => props.onSuccess(data, details))
-    .catch(err => console.log(err));
+    .then(details => onSuccess(data, details))
+    .catch(reportError);
 
   useEffect(() => {
     if (!window.paypal) {
@@ -42,14 +60,19 @@ function PaypalButton(props) {
     };
   }, []);
 
+  if (sdkError) {
+    return <div>{sdkError}</div>
+  }
+
   if (!sdkReady) {
     return <div>Loading...</div>
   }
 
   const Button = window.paypal.Buttons.driver('react', { React, ReactDOM });
 
-  return <Button {...props} createOrder={(data, actions) => createOrder(data, actions)}
-    onApprove={(data, actions) => onApprove(data, actions)} />
+  return <Button {...rest} createOrder={(data, actions) => createOrder(data, actions)}
+    onApprove={(data, actions) => onApprove(data, actions)}
+    onError={reportError} />
 }
 
 export default PaypalButton;

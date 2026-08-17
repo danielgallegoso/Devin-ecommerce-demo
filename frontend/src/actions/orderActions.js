@@ -1,3 +1,4 @@
+import { getErrorMessage } from '../utils/errorMessage';
 import Axios from "axios";
 import {
   ORDER_CREATE_REQUEST, ORDER_CREATE_SUCCESS, ORDER_CREATE_FAIL,
@@ -15,7 +16,7 @@ const createOrder = (order) => async (dispatch, getState) => {
     });
     dispatch({ type: ORDER_CREATE_SUCCESS, payload: newOrder });
   } catch (error) {
-    dispatch({ type: ORDER_CREATE_FAIL, payload: error.message });
+    dispatch({ type: ORDER_CREATE_FAIL, payload: getErrorMessage(error) });
   }
 }
 
@@ -29,7 +30,7 @@ const listMyOrders = () => async (dispatch, getState) => {
     });
     dispatch({ type: MY_ORDER_LIST_SUCCESS, payload: data })
   } catch (error) {
-    dispatch({ type: MY_ORDER_LIST_FAIL, payload: error.message });
+    dispatch({ type: MY_ORDER_LIST_FAIL, payload: getErrorMessage(error) });
   }
 }
 
@@ -44,7 +45,7 @@ const listOrders = () => async (dispatch, getState) => {
     });
     dispatch({ type: ORDER_LIST_SUCCESS, payload: data })
   } catch (error) {
-    dispatch({ type: ORDER_LIST_FAIL, payload: error.message });
+    dispatch({ type: ORDER_LIST_FAIL, payload: getErrorMessage(error) });
   }
 }
 
@@ -58,7 +59,7 @@ const detailsOrder = (orderId) => async (dispatch, getState) => {
     });
     dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data })
   } catch (error) {
-    dispatch({ type: ORDER_DETAILS_FAIL, payload: error.message });
+    dispatch({ type: ORDER_DETAILS_FAIL, payload: getErrorMessage(error) });
   }
 }
 
@@ -72,7 +73,7 @@ const payOrder = (order, paymentResult) => async (dispatch, getState) => {
     });
     dispatch({ type: ORDER_PAY_SUCCESS, payload: data })
   } catch (error) {
-    dispatch({ type: ORDER_PAY_FAIL, payload: error.message });
+    dispatch({ type: ORDER_PAY_FAIL, payload: getErrorMessage(error) });
   }
 }
 
@@ -86,7 +87,7 @@ const deleteOrder = (orderId) => async (dispatch, getState) => {
     });
     dispatch({ type: ORDER_DELETE_SUCCESS, payload: data })
   } catch (error) {
-    dispatch({ type: ORDER_DELETE_FAIL, payload: error.message });
+    dispatch({ type: ORDER_DELETE_FAIL, payload: getErrorMessage(error) });
   }
 }
 export { createOrder, detailsOrder, payOrder, listMyOrders, listOrders, deleteOrder };

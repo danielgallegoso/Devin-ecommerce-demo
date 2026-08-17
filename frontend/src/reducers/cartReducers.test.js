@@ -1,6 +1,7 @@
 import { cartReducer } from './cartReducers';
 import {
   CART_ADD_ITEM,
+  CART_ADD_ITEM_FAIL,
   CART_REMOVE_ITEM,
   CART_SAVE_SHIPPING,
   CART_SAVE_PAYMENT,
@@ -93,6 +94,39 @@ describe('cartReducer', () => {
 
     expect(result.payment).toEqual(payment);
     expect(result.cartItems).toHaveLength(1);
+  });
+
+  test('records the failure message when adding an item fails', () => {
+    // Arrange
+    const state = { cartItems: [], shipping: {}, payment: {} };
+
+    // Act
+    const result = cartReducer(state, {
+      type: CART_ADD_ITEM_FAIL,
+      payload: 'Product Not Found.',
+    });
+
+    // Assert
+    expect(result.error).toBe('Product Not Found.');
+  });
+
+  test('keeps the existing cart items when adding an item fails', () => {
+    const state = { cartItems: [buildItem()], shipping, payment };
+
+    const result = cartReducer(state, {
+      type: CART_ADD_ITEM_FAIL,
+      payload: 'Network Error',
+    });
+
+    expect(result.cartItems).toEqual(state.cartItems);
+  });
+
+  test('clears a previous failure message once an item is added', () => {
+    const state = { cartItems: [], shipping: {}, payment: {}, error: 'Network Error' };
+
+    const result = cartReducer(state, { type: CART_ADD_ITEM, payload: buildItem() });
+
+    expect(result.error).toBeUndefined();
   });
 
   test('returns the initial state for an unknown action', () => {

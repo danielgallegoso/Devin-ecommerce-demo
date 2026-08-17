@@ -6,6 +6,7 @@ import {
   listProducts,
   deleteProdcut,
 } from '../actions/productActions';
+import { getErrorMessage } from '../utils/errorMessage';
 
 function ProductsScreen(props) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -18,6 +19,7 @@ function ProductsScreen(props) {
   const [countInStock, setCountInStock] = useState('');
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const productList = useSelector((state) => state.productList);
   const { loading, products, error } = productList;
 
@@ -79,6 +81,7 @@ function ProductsScreen(props) {
     const file = e.target.files[0];
     const bodyFormData = new FormData();
     bodyFormData.append('image', file);
+    setUploadError('');
     setUploading(true);
     axios
       .post('/api/uploads', bodyFormData, {
@@ -91,7 +94,7 @@ function ProductsScreen(props) {
         setUploading(false);
       })
       .catch((err) => {
-        console.log(err);
+        setUploadError(getErrorMessage(err));
         setUploading(false);
       });
   };
@@ -146,6 +149,7 @@ function ProductsScreen(props) {
                 ></input>
                 <input type="file" onChange={uploadFileHandler}></input>
                 {uploading && <div>Uploading...</div>}
+                {uploadError && <div>{uploadError}</div>}
               </li>
               <li>
                 <label htmlFor="brand">Brand</label>
@@ -206,6 +210,10 @@ function ProductsScreen(props) {
       )}
 
       <div className="product-list">
+        {loading && <div>Loading...</div>}
+        {error && <div>{error}</div>}
+        {loadingDelete && <div>Deleting...</div>}
+        {errorDelete && <div>{errorDelete}</div>}
         <table className="table">
           <thead>
             <tr>
