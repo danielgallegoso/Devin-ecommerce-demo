@@ -91,10 +91,9 @@ router.delete('/:id', isAuth, isAdmin, async (req, res) => {
   const deletedProduct = await Product.findById(req.params.id);
   if (deletedProduct) {
     await deletedProduct.remove();
-    res.send({ message: 'Product Deleted' });
-  } else {
-    res.send('Error in Deletion.');
+    return res.send({ message: 'Product Deleted' });
   }
+  return res.status(404).send({ message: 'Product Not Found.' });
 });
 
 router.post('/', isAuth, isAdmin, async (req, res) => {

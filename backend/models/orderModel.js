@@ -6,8 +6,15 @@ const shippingSchema = {
   country: { type: String, required: true },
 };
 
+const paymentResultSchema = {
+  payerID: { type: String },
+  orderID: { type: String },
+  paymentID: { type: String },
+};
+
 const paymentSchema = {
-  paymentMethod: { type: String, required: true }
+  paymentMethod: { type: String, required: true },
+  paymentResult: paymentResultSchema,
 };
 
 const orderItemSchema = new mongoose.Schema({
